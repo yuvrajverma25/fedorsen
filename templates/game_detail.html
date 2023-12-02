@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
+</head>
+
+<body>
+    <div class="header-container">
+        <div class="heading">
+            <a href="{% url 'home' %}">
+                <h1>F E D O R S E N</h1>
+            </a>
+        </div>
+
+        <div class="desc">
+            <img src="{{ img_src }}" width="20" height="40" alt="">
+            <span>League - {{ league }}</span>
+            <br>
+            <span>Team - {{ team }}</span>
+        </div>
+
+        {% if menus %}
+        <div class="button-container">
+            <div class="button-row">
+                {% for menu in menus|slice:":7" %}
+                    <a target="_blank" href="{% url 'game_detail' game_id=game_id %}?league={{ league|urlencode }}&team={{ team|urlencode }}&tabContent={{ menu.data_tab }}&img_src={{ img_src|urlencode }}">
+                        <button class="button">{{ menu.text }}</button>
+                    </a>
+                {% endfor %}
+            </div>
+            <div class="button-row">
+                {% for menu in menus|slice:"7:" %}
+                    <a target="_blank" href="{% url 'game_detail' game_id=game_id %}?league={{ league|urlencode }}&team={{ team|urlencode }}&tabContent={{ menu.data_tab|urlencode }}&img_src={{ img_src|urlencode }}">
+                        <button class="button">{{ menu.text }}</button>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p>Something went wrong.Please reload the page</p>
+        {% endif %}
+        
+    </div>
+
+    {% if charts %}
+    <div class="charts">
+        {% for chart in charts %}
+            <div class="chart-container">
+                <p>{{ chart.title }}</p>
+                <img src="{{ chart.img_src }}" alt="Chart Image">
+                <p>Coefficient: {{ chart.coef }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Something went wrong.Please reload the page</p>
+    {% endif %}
+    
+    
+    <div class="tablediv">
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Market</th>
+                    <th>Summ</th>
+                    <th>Change</th>
+                    <th>Time</th>
+                    <th>Score</th>
+                    <th>Odds</th>
+                    <th>Change %</th>
+                    <th>All</th>
+                    <th>Percent money on market</th>
+                </tr>
+            </thead>
+            {% if rows %}
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.type }}</td>
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.market }}</td>
+                        <td>{{ row.summ }}</td>
+                        <td>{{ row.change }}</td>
+                        <td>{{ row.time }}</td>
+                        <td>{{ row.score }}</td>
+                        <td>{{ row.odds }}</td>
+                        <td>{{ row.change_percent }}</td>
+                        <td>{{ row.all }}</td>
+                        <td>{{ row.percent_money_on_market }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            {% else %}
+            <p>Something went wrong.Please reload the page</p>
+            {% endif %}
+        </table>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button {
+    display: inline-block;
+    background: linear-gradient(to right, #808080, #696969);
+    color: #fff;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
+    cursor: pointer;
+    margin: 5px; /* Отступ между кнопками */
+    font-size: 13px;
+    outline: none;
+}
+
+.button:hover {
+    background: linear-gradient(to right, #808080, #696969);
+}
+
+.header-container {
+    background: linear-gradient(to right, #1a1818, #131111);
+    padding: 20px;
+    text-align: left;
+}
+
+
+.heading h1 {
+    color: #fcfbfb;
+    margin: 0;
+    display: inline-block;
+}
+
+.desc {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.desc img {
+    width: 100px;
+    height: 100;
+    margin-right: 5px;
+}
+
+.desc span {
+    display: block;
+    color: #fcfbfb;
+    font-size: 30px;
+}
+
+
+
+
+
+.charts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start; /* Выравнивание по верхнему краю */
+    margin: 50px;
+}
+
+.chart-container {
+    text-align: center;
+    margin: 10px;
+}
+
+.chart-container p {
+    margin: 5px 0; /* Отступ сверху и снизу между элементами p */
+}
+
+.charts img {
+    max-width: 300px;
+    max-height: 300px;
+    margin-top: 10px; /* Отступ сверху от изображения */
+    margin-bottom: 10px; /* Отступ снизу от изображения */
+}
+
+
+.tablediv {
+    margin-top: 20px;
+}
+
+.tablediv table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tablediv th,
+.tablediv td {
+    border: 1px solid #ddd;
+    padding: 5px;
+    text-align: left;
+}
+
+.tablediv th {
+    background-color: #f2f2f2;
+}
+
+.tablediv tbody tr:hover {
+    background-color: #f5f5f5;
+}

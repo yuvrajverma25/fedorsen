@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            margin: 20% auto;
+        }
+        #timer {
+            font-size: 2em;
+            color: #333;
+        }
+        #linkContainer {
+            display: none;
+            margin-top: 20px;
+        }
+        #redirectLink {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>OOPS something went wrong. Please continue after some time</h1>
+<div id="timer">5</div>
+<div id="linkContainer">
+    <a id="redirectLink" href="#">Continue</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set the countdown timer
+        let count = 5;
+        const timerElement = document.getElementById('timer');
+        const linkContainer = document.getElementById('linkContainer');
+        console.log(count)
+
+        const countdown = setInterval(function () {
+            count--;
+            timerElement.textContent = count;
+            
+
+            if (count <= 0) {
+                clearInterval(countdown);
+                linkContainer.style.display = 'block';
+            }
+        }, 1000);
+
+        // Redirect to another page when the link is clicked
+        document.getElementById('redirectLink').addEventListener('click', function () {
+            window.location.href = '{% url "home" %}';
+        });
+    });
+</script>
+
+</body>
+</html>

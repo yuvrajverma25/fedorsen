@@ -1,0 +1,38 @@
+<!-- your_template_name.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting Data</title>
+</head>
+<body>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Bookmaker Logo</th>
+            <th>Title</th>
+            <th>Odds 1</th>
+            <th>Odds X</th>
+            <th>Odds 2</th>
+            <th>Payout</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bet_data in data_list %}
+            <tr>
+                <td><img src="{{ bet_data.src }}" alt="{{ bet_data.title }}"></td>
+                <td>{{ bet_data.title }}</td>
+                <td>{{ bet_data.odds_1 }}</td>
+                <td>{{ bet_data.odds_x }}</td>
+                <td>{{ bet_data.odds_2 }}</td>
+                <td>{{ bet_data.payout }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

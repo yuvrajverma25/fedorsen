@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+
+<head>
+	<title>Fedorsen scanner</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	
+	{% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+	<!-- Popup for text input -->
+	<div id="popup">
+		<form id="textForm" method="POST" action="{% url 'check_codes' %}">
+			{% csrf_token %}
+			{% comment %} <label for="username">Username:</label>
+			<input type="text" required id="username" name="username"> {% endcomment %}
+	
+			<label for="code">Code:</label>
+			<input type="text" required id="code" name="code">
+	
+			<button type="submit" id="submitTextButton">Submit</button>
+			<button type="button" id="closePopupButton">Close</button>
+		</form>
+	</div>
+
+	
+	<div class="background-container">
+		<h1 id="fedorsenText" data-href="{% url 'home' %}" style="cursor: pointer;">F E D O R S E N</h1>
+
+		<div class="container-buttons">
+			<a class="button button-prematch" href="{% url 'home' %}">Prematch</a>
+			<a class="button button-telegram" href="https://t.me/zachebra">Telegram</a>
+			<a class="button button-live" href="{% url 'live' %}">Live</a>
+			<a class="button button-football" href="{% url 'football' %} ">Football</a>			
+		</div>
+	</div>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Country</th>
+				<th>Category</th>
+				<th>Match</th>
+				<th>All money</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% if rows_data %}
+			{% for row in rows_data %}
+				{% if request.user.is_authenticated and request.user.accesscode.is_valid  %}
+					<tr target="blank" data-href="{% url 'game_detail' game_id=row.game_id %}?league={{ row.league|urlencode }}&team={{ row.teams|urlencode }}&img_src={{ row.img_src|urlencode }}" style="cursor: pointer;"> 
+				{% else %}
+					<tr class="openPopupButton" style="cursor:pointer" >
+				{% endif %}
+						<td>{{ row.datetime }}</td>
+						<td>{% if row.img_src %}<img src="{{ row.img_src }}" alt="Country Flag" width="20">{% endif %}</td>
+						<td>{{ row.league }}</td>
+						<td>{{ row.teams }}</td>
+						<td>{{ row.all_money }}</td>
+					</tr>
+            {% endfor %}
+			{% else %}
+					<p> No data </p>
+			{% endif %}
+		</tbody>
+	</table> 
+
+	
+
+	<script src="{% static 'js/home.js' %}"></script>
+	<script src="{% static 'js/pop-up.js' %}"></script>
+
+
+	
+</body>
+</html>

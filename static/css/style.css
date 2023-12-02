@@ -1,0 +1,210 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    padding: 20px 0;
+}
+
+/* Стили для кнопок */
+.container-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 10px;
+}
+
+.button {
+    display: inline-block;
+    background: linear-gradient(to right,#808080 ,#696969); /* Градиентный фон от оранжевого к темно-оранжевому */
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: linear-gradient(to right, #cc5500, #ff6600); /* Изменение градиента при наведении */
+}
+
+
+.button:hover {
+    background:linear-gradient(to right #808080 , #696969);
+}
+
+.button-prematch {
+    background-color: #ff6600;
+}
+
+.button-live {
+    background-color: #33cc33;
+}
+
+/* Стили для таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+thead {
+    background-color: #333;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Стили для изображений внутри ячейки */
+td img {
+    max-width: 80px;
+    max-height: 80px;
+    float: left;
+    margin-right: 10px;
+}
+
+/* Стили для ячейки "All money" */
+td:last-child {
+    font-weight: bold;
+    color: #e44d26;
+}
+
+
+/* Стили для фонового контейнера */
+.background-container {
+    background:linear-gradient(to right, #1a1818 , #131111); /* Желаемый фоновый цвет */
+    padding: 20px; /* Отступ вокруг контейнера */
+    text-align: center; /* Центрируем текст в контейнере */
+}
+
+.background-container h1 {
+    font-family: 'Your Desired Font', fantasy;
+    font-size: 50px;
+    color: #fcfbfb;
+    /* Замените 'Your Desired Font' на название выбранного вами шрифта */
+}
+
+#popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    z-index: 1000;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    border-radius: 10px;
+}
+
+#popup label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333333;
+    font-size: 16px;
+}
+
+#popup input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#popup button {
+    background-color: #4CAF50;
+    color: #ffffff;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+}
+
+#popup button:hover {
+    background-color: #45a049;
+}
+
+#closePopupButton {
+    background-color: #e74c3c;
+    margin-left: 15px;
+}
+
+#closePopupButton:hover {
+    background-color: #c0392b;
+}
+
+/* Additional styles for form layout */
+#textForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#textForm label {
+    width: 100%;
+    text-align: left;
+}
+
+#textForm button {
+    margin-top: 20px;
+}
+
+/* Add some basic styling to the messages */
+ul.messages {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+/* Style for individual messages */
+ul.messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Different styles for message tags (success, info, warning, error) */
+ul.messages li.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+ul.messages li.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+ul.messages li.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+ul.messages li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
