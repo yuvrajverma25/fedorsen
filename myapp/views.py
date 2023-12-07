@@ -1,5 +1,3 @@
-# myapp/views.py
-import time
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 import requests
@@ -19,16 +17,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
-from bs4 import BeautifulSoup
-from django.shortcuts import render
-from django.http import HttpResponse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 firefox_driver_path = 'geckodriver.exe'
 
-
+@login_required(login_url='home')
 def bets_other(request,country,league,matches,other):
     driver = None
     try:
@@ -99,8 +94,7 @@ def bets_other(request,country,league,matches,other):
             driver.quit()
 
 
-
-
+@login_required(login_url='home')
 def bets(request,country,league,matches):
     driver = None
     try:
@@ -185,7 +179,7 @@ def bets(request,country,league,matches):
             driver.quit()
 
 
-
+@login_required(login_url='home')
 def football_detail(request,country,league):
     driver = None
     try:
@@ -414,7 +408,7 @@ def fetch_tabContent(url, tabContent):
     except RuntimeError:
         return None
     
-
+@retry(tries=3, delay=2, backoff=2, max_delay=40, jitter=(1, 2))
 def fetch_football_rows(url):
     try:
         response = make_request(url)
@@ -480,7 +474,7 @@ def live(request):
 
     return render(request, 'home.html', {'rows_data': rows_data})
 
-
+@login_required(login_url='home')
 def football_results(request):
     url = 'https://www.oddsportal.com/football/results'
 
@@ -494,6 +488,7 @@ def football_results(request):
     return render(request, 'football.html', {'data': rows_data})
 
 
+@login_required(login_url='home')
 def football(request):
     url = 'https://www.oddsportal.com/football/'
 
@@ -501,7 +496,8 @@ def football(request):
         rows_data = fetch_football_rows(url)
     except:
         print("oops my error")
-
+        return redirect('error')
+    
     if rows_data == False:
         return render(request,'error.html')
     
@@ -510,7 +506,6 @@ def football(request):
 
 def error(request):
     return render(request, 'error.html')
-
 
 
 @login_required(login_url='home') 
@@ -612,17 +607,7 @@ def logOut(request):
 
 
 
- 
 
-# def football_detail(request,country,league):
-#     url = 'https://www.oddsportal.com/football/europe/europa-league/'
-#     response = make_request(url)
-
-#     soup = BeautifulSoup(response.text, 'lxml')
-#     sections = soup.find('div', class_='text-black-main font-main w-full truncate text-xs font-normal leading-5')
-#     print(sections)
-    
-#     return HttpResponse("HI guys")
 
 
 

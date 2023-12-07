@@ -33,7 +33,7 @@
     <h1>OOPS! Something went wrong. Please try again later.</h1>
     <div id="timer">10</div>
     <div id="linkContainer">
-        <a id="redirectLink" href="https://www.google.com" target="_blank">Click here to continue</a>
+        <a href="{% url 'home' %}" >Click here to continue</a>
     </div>
 
     <script>
@@ -53,10 +53,7 @@
                 }
             }, 1000);
 
-            // Redirect to another page when the link is clicked
-            document.getElementById('redirectLink').addEventListener('click', function () {
-                location.reload();
-            });
+
         });
     </script>
 </body>
