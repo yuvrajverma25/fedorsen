@@ -29,6 +29,78 @@ from selenium.webdriver.support import expected_conditions as EC
 firefox_driver_path = 'geckodriver.exe'
 
 
+def bets_other(request,country,league,matches,other):
+    driver = None
+    try:
+        # Specify the path to the GeckoDriver executable
+        firefox_options = Options()
+        firefox_options.add_argument('--headless')
+
+        # Create the Service and WebDriver instances
+        driver_service = Service(firefox_driver_path)
+        driver = webdriver.Firefox(service=driver_service, options=firefox_options)
+
+        url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/{other}'
+
+        driver.get(url)
+        print("url - ",url)
+
+
+        WebDriverWait(driver, 1).until(
+            EC.presence_of_all_elements_located((By.XPATH, '//*'))
+        )
+
+        body_element = driver.page_source
+
+        soup = BeautifulSoup(body_element, 'lxml')
+
+        divs = soup.find_all('div','relative flex flex-col')
+
+        data_list = []
+
+        for div in divs:
+            title = div.find('p','max-sm:!hidden').text.strip()
+            ov_ah = div.find_all('p','height-content !text-black-main next-m:min-w-[100%] flex-center min-h-full min-w-[50px] hover:!bg-gray-medium default-odds-bg-bgcolor border gradient-green-added-border')
+
+            over = ov_ah[0].text.strip() if other else ""
+            under = ov_ah[1].text.strip() if len(other)>1 else ""
+     
+            payout = div.find('div','colaps-btn border-black-borders border-l')
+
+            payout = payout.text.strip()
+
+
+            bet_data = {
+                'title':title,
+                'over':over,
+                'under':under,
+                'payout':payout,
+            }
+
+            data_list.append(bet_data)
+
+            over_under = "#over-under"
+            ah = "#ah"
+            other
+
+            if over_under in other:
+                other = over_under
+            elif ah in other:
+                other = ah
+        
+        return render(request, 'bets-other.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'other':other})
+    
+    except Exception as e:
+        print("Error" , e)
+        return render(request,'error.html')
+
+    finally:
+        if driver:
+            driver.quit()
+
+
+
+
 def bets(request,country,league,matches):
     driver = None
     try:
@@ -40,9 +112,17 @@ def bets(request,country,league,matches):
         driver_service = Service(firefox_driver_path)
         driver = webdriver.Firefox(service=driver_service, options=firefox_options)
 
-        url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/#1X2;2'
+        tab = request.GET.get('tab',None)
+
+        if tab is not None:
+            url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/{tab}'
+        else:
+            url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/#1X2;2'
         
         driver.get(url)
+        print("tab - ",tab)
+        print("url - ",url)
+    
 
         # Wait until the entire DOM is loaded
         WebDriverWait(driver, 1).until(
@@ -79,14 +159,25 @@ def bets(request,country,league,matches):
             }
 
             data_list.append(bet_data)
-            
-        
-        return render(request, 'bets.html', {'data_list': data_list})
+
+            first = "#1X2"
+            second = "#bts"
+
+            if tab is not None:
+                if first in tab:
+                    tab = first
+                elif second in tab:
+                    tab = second
+            else:
+                tab = first
+
+
+        return render(request, 'bets.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'tab':tab})
     
 
     except Exception as e:
-        print(e)
-        return HttpResponse(f"Error fetching data from website: {e}")
+        print("Error" , e)
+        return render(request,'error.html')
 
     finally:
         # Close the browser window if the driver is assigned
@@ -163,7 +254,10 @@ def football_detail(request,country,league):
 
             data_list.append(event_data)
 
-        return render(request, 'pfd.html', {'data_list': data_list,'image_src':image_src,'country':country,'league':league})
+            country = country.upper()
+            league = league.upper()
+
+        return render(request, 'football_detail.html', {'data_list': data_list,'image_src':image_src,'country':country,'league':league})
 
     except Exception as e:
         print(e)
@@ -362,7 +456,7 @@ def fetch_football_rows(url):
 
     except Exception as error:
         print(f"An unexpected error occurred: {error}")
-        return None
+        return False
 
 
 ################################################################## Main Functions ###############################################################################################
@@ -403,13 +497,14 @@ def football_results(request):
 def football(request):
     url = 'https://www.oddsportal.com/football/'
 
-    # Assuming 'rows_data' is intended to store the fetched data
     try:
         rows_data = fetch_football_rows(url)
     except:
         print("oops my error")
 
-    # Pass the data to the template for rendering
+    if rows_data == False:
+        return render(request,'error.html')
+    
     return render(request, 'football.html', {'data': rows_data})
 
 

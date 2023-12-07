@@ -6,6 +6,8 @@
 <head>
 	<title>Fedorsen scanner</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
@@ -43,7 +45,12 @@
 			<a class="button button-prematch" href="{% url 'home' %}">Prematch</a>
 			<a class="button button-telegram" href="https://t.me/zachebra">Telegram</a>
 			<a class="button button-live" href="{% url 'live' %}">Live</a>
-			<a class="button button-football" href="{% url 'football' %} ">Football</a>			
+			{% if request.user.is_authenticated and request.user.accesscode.is_valid  %}
+			<a class="button button-football" href="{% url 'football' %} ">Football</a>		
+			{% else %}
+			<a class="button button-football openPopupButton" href="#">Football</a>		
+					{% comment %} <a class="openPopupButton"  href="#" style="cursor:pointer" ></a> {% endcomment %}
+			{% endif %}	
 		</div>
 	</div>
 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting Data</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-size: 50px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        img {
+            max-width: 50px;
+            max-height: 50px;
+            border-radius: 50%;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Betting Data</h1>
+    </div>
+
+    <div class="buttons-container">
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','#1X2;2')">1X2</button>
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','#over-under;2')">Over/Under</button>
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','#ah;2')">Asian Handicap</button>
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','#bts;2')">Both teams to Score</button>
+    </div>
+
+    <div class="buttons-container">
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','{{other}};2')">Full time</button>
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','{{other}};3')">1st half</button>
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','{{other}};4')">2nd half</button>
+    </div>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Over</th>
+                <th>Under</th>
+                <th>Payout</th>
+            </tr>
+        </thead>
+        {% if data_list %}
+        <tbody>
+            {% for bet_data in data_list %}
+            <tr>
+                <td>{{ bet_data.title }}</td>
+                <td>{{ bet_data.over }}</td>
+                <td>{{ bet_data.under }}</td>
+                <td>{{ bet_data.payout }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% else %}
+        <p>No data. <a href="{% url 'home' %}">Click here to return to home page</a></p>
+        {% endif %}
+    </table>
+
+    <script>
+        function redirectToURL(country,league,matches,tab) {
+            var currentURL = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/';
+            
+            var separator = currentURL.includes('?') ? '&' : '?';
+
+            var url = currentURL + separator + 'tab=' + encodeURIComponent(tab);
+
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+
+        function redirectToURLOther(country,league,matches,tab) {
+            var url = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/' + encodeURIComponent(tab);
+
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+    </script>
+    
+
+</body>
+
+</html>

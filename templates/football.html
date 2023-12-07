@@ -4,55 +4,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Football Portal</title>
 
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        th, td {
+        .main_heading {
+            text-align: center;
+            background-color: #333;
+            color: white;
+            padding: 40px;
+            margin-bottom: 20px;
+            font-size: 50px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            color: white;
+        }
+
+        .container a {
+            text-decoration: none;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .container a:hover {
+            background-color: #555;
+        }
+
+        table {
+
+            width: 100%;
+            padding: 10px;
+        }
+
+        th,
+        td {
             border: 1px solid #dddddd;
             text-align: left;
-            padding: 8px;
+            padding: 12px;
+            cursor: pointer;
+            /* Add cursor pointer to indicate clickability */
+            transition: background-color 0.3s;
+            /* Smooth transition effect */
         }
+
+        td:hover {
+            background-color: #d51818;
+            /* Change background color on hover */
+        }
+
+        /* ... Remaining CSS styles ... */
 
         th {
             background-color: #f2f2f2;
+        }
+
+        .item-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .item {
+            width: 45%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <div class="main_heading">
+        <h1>Football Portal</h1>
+    </div>
+    {% comment %} <div class="container">
         <a href="{% url 'football' %}">Upcoming</a>
         <a href="{% url 'football_results' %}">Results</a>
-    </div>
+    </div> {% endcomment %}
+
+
     {% for item in data %}
     <table>
         <tr>
             <th colspan="2">{{ item.main_heading }}</th>
         </tr>
-        {% for li_item in item.list_items %}
         <tr>
-            <td><a href="{{ li_item.href }}">{{ li_item.text }}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% endfor %}
-    
-{% comment %} 
-    {% for item in data %}
-        <h2>{{ item.main_heading }}</h2>
-        <ul>
             {% for li_item in item.list_items %}
-                <li>
-                    <a href="{{ li_item.href }}">{{ li_item.text }}</a>
-                </li>
+            <td onclick="redirectToHref('{{ li_item.href }}')">{{ li_item.text }}</td>
+            {% if forloop.counter|divisibleby:2 and not forloop.last %}
+        </tr>
+        <tr>
+            {% endif %}
             {% endfor %}
-        </ul>
-    {% endfor %} {% endcomment %}
+        </tr>
+    </table>
+
+    {% endfor %}
+
+
+    <script>
+        function redirectToHref(href) {
+
+            var win = window.open(href, '_blank');
+            win.focus();
+
+        }
+    </script>
 </body>
 
 </html>

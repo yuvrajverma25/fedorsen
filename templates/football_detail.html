@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Match Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            background-color: #fff;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding:10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #17131329;
+            color: #333;
+        }
+
+
+        tr:hover {
+            background-color: #ffd700;
+            cursor: pointer;
+        }
+
+        img {
+            max-width: 80px;
+            max-height: 80px;
+            float: left;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+
+        .main_heading {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            margin: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='main_heading'>
+        <img src="{{image_src}}" alt="Country Flag">
+        <h2>{{ league }}</h2>
+    </div>
+
+    <table>
+        {% for event in data_list %}
+        {% if event.date %}
+        <thead>
+            <tr>
+                <th colspan="2">{{ event.date }}</th>
+                <th>1</th>
+                <th>X</th>
+                <th>2</th>
+                <th>B's</th>
+            </tr>
+        </thead>
+        {% endif %}
+        <tbody>
+            <tr onclick="openInNewTab('{{ event.href }}')">
+                <td>{{ event.time }}</td>
+                <td>{{ event.team1 }} - {{ event.team2 }}</td>
+                <td>{{ event.odds_1 }}</td>
+                <td>{{ event.odds_x }}</td>
+                <td>{{ event.odds_2 }}</td>
+                <td>{{ event.additional_info }}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+    <script>
+        function openInNewTab(url) {
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+    </script>
+</body>
+
+</html>

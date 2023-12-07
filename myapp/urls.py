@@ -13,4 +13,5 @@ urlpatterns = [
     path('logout/',views.logOut,name='logOut'),
     path('football/<str:country>/<str:league>/',views.football_detail,name='football_detail'),
     path('football/<str:country>/<str:league>/<str:matches>/',views.bets,name='bets'),
+    path('football/<str:country>/<str:league>/<str:matches>/<str:other>',views.bets_other,name='bets-other'),
 ]

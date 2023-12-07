@@ -30,37 +30,34 @@
     </style>
 </head>
 <body>
-<h1>OOPS something went wrong. Please continue after some time</h1>
-<div id="timer">5</div>
-<div id="linkContainer">
-    <a id="redirectLink" href="#">Continue</a>
-</div>
+    <h1>OOPS! Something went wrong. Please try again later.</h1>
+    <div id="timer">10</div>
+    <div id="linkContainer">
+        <a id="redirectLink" href="https://www.google.com" target="_blank">Click here to continue</a>
+    </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Set the countdown timer
-        let count = 5;
-        const timerElement = document.getElementById('timer');
-        const linkContainer = document.getElementById('linkContainer');
-        console.log(count)
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the countdown timer
+            let count = 10; // Adjust the countdown duration in seconds
+            const timerElement = document.getElementById('timer');
+            const linkContainer = document.getElementById('linkContainer');
 
-        const countdown = setInterval(function () {
-            count--;
-            timerElement.textContent = count;
-            
+            const countdown = setInterval(function () {
+                count--;
+                timerElement.textContent = count;
 
-            if (count <= 0) {
-                clearInterval(countdown);
-                linkContainer.style.display = 'block';
-            }
-        }, 1000);
+                if (count <= 0) {
+                    clearInterval(countdown);
+                    linkContainer.style.display = 'block';
+                }
+            }, 1000);
 
-        // Redirect to another page when the link is clicked
-        document.getElementById('redirectLink').addEventListener('click', function () {
-            window.location.href = '{% url "home" %}';
+            // Redirect to another page when the link is clicked
+            document.getElementById('redirectLink').addEventListener('click', function () {
+                location.reload();
+            });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
