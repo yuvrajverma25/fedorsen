@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Detail</title>
+    <title>Fedorsen scanner</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
 </head>
 
@@ -22,45 +23,57 @@
             <br>
             <span>Team - {{ team }}</span>
         </div>
-
         {% if menus %}
         <div class="button-container">
             <div class="button-row">
                 {% for menu in menus|slice:":7" %}
-                    <a target="_blank" href="{% url 'game_detail' game_id=game_id %}?league={{ league|urlencode }}&team={{ team|urlencode }}&tabContent={{ menu.data_tab }}&img_src={{ img_src|urlencode }}">
-                        <button class="button">{{ menu.text }}</button>
-                    </a>
+                <form id="gameForm{{ forloop.counter }}" target="_blank" method="post" action="{% url 'game_detail' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="league" value="{{ league }}">
+                    <input type="hidden" name="team" value="{{ team }}">
+                    <input type="hidden" name="tabContent" value="{{ menu.data_tab }}">
+                    <input type="hidden" name="img_src" value="{{ img_src }}">
+                    <input type="hidden" name="game_id" value="{{ game_id }}">                    
+                </form>
+                <a href="#" class="button" onclick="document.getElementById('gameForm{{ forloop.counter }}').submit();">{{ menu.text }}</a>
                 {% endfor %}
             </div>
             <div class="button-row">
                 {% for menu in menus|slice:"7:" %}
-                    <a target="_blank" href="{% url 'game_detail' game_id=game_id %}?league={{ league|urlencode }}&team={{ team|urlencode }}&tabContent={{ menu.data_tab|urlencode }}&img_src={{ img_src|urlencode }}">
-                        <button class="button">{{ menu.text }}</button>
-                    </a>
+                <form id="gameFormSecond{{ forloop.counter }}" target="_blank" method="post" action="{% url 'game_detail' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="league" value="{{ league }}">
+                    <input type="hidden" name="team" value="{{ team }}">
+                    <input type="hidden" name="tabContent" value="{{ menu.data_tab }}">
+                    <input type="hidden" name="img_src" value="{{ img_src }}">
+                    <input type="hidden" name="game_id" value="{{ game_id }}">                    
+                </form>
+                <a href="#" class="button" onclick="document.getElementById('gameFormSecond{{ forloop.counter }}').submit();">{{ menu.text }}</a>
                 {% endfor %}
             </div>
+            <!-- Add another button-row section if needed -->
         </div>
         {% else %}
-        <p>Something went wrong.Please reload the page</p>
+        <p>Opps something went wrong. Please refresh the page</p>
         {% endif %}
-        
+
     </div>
 
     {% if charts %}
     <div class="charts">
         {% for chart in charts %}
-            <div class="chart-container">
-                <p>{{ chart.title }}</p>
-                <img src="{{ chart.img_src }}" alt="Chart Image">
-                <p>Coefficient: {{ chart.coef }}</p>
-            </div>
+        <div class="chart-container">
+            <p>{{ chart.title }}</p>
+            <img src="{{ chart.img_src }}" alt="Chart Image">
+            <p>Coefficient: {{ chart.coef }}</p>
+        </div>
         {% endfor %}
     </div>
     {% else %}
-    <p>Something went wrong.Please reload the page</p>
+    <p>Opps something went wrong. Please refresh the page</p>
     {% endif %}
-    
-    
+
+    {% if rows %}
     <div class="tablediv">
         <table>
             <thead>
@@ -78,29 +91,29 @@
                     <th>Percent money on market</th>
                 </tr>
             </thead>
-            {% if rows %}
+
             <tbody>
                 {% for row in rows %}
-                    <tr>
-                        <td>{{ row.type }}</td>
-                        <td>{{ row.date }}</td>
-                        <td>{{ row.market }}</td>
-                        <td>{{ row.summ }}</td>
-                        <td>{{ row.change }}</td>
-                        <td>{{ row.time }}</td>
-                        <td>{{ row.score }}</td>
-                        <td>{{ row.odds }}</td>
-                        <td>{{ row.change_percent }}</td>
-                        <td>{{ row.all }}</td>
-                        <td>{{ row.percent_money_on_market }}</td>
-                    </tr>
+                <tr>
+                    <td>{{ row.type }}</td>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.market }}</td>
+                    <td>{{ row.summ }}</td>
+                    <td>{{ row.change }}</td>
+                    <td>{{ row.time }}</td>
+                    <td>{{ row.score }}</td>
+                    <td>{{ row.odds }}</td>
+                    <td>{{ row.change_percent }}</td>
+                    <td>{{ row.all }}</td>
+                    <td>{{ row.percent_money_on_market }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
-            {% else %}
-            <p>Something went wrong.Please reload the page</p>
-            {% endif %}
         </table>
     </div>
+    {% else %}
+    <p>Opps something went wrong. Please refresh the page</p>
+    {% endif %}
 </body>
 
 </html>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betting Data</title>
+    <title>Betting Details</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -74,6 +74,29 @@
         .button:hover {
             background-color: #45a049;
         }
+
+        /* Added styles for the inner table */
+        .inner-table-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .inner-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Improved styling for better visibility */
+        tr {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 
@@ -96,7 +119,8 @@
         <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','{{other}};4')">2nd half</button>
     </div>
 
-    <table border="1">
+
+    <table border="1" id="mainTable">
         <thead>
             <tr>
                 <th>Title</th>
@@ -108,20 +132,50 @@
         {% if data_list %}
         <tbody>
             {% for bet_data in data_list %}
-            <tr>
+            <tr onclick="showInnerTable(this)">
                 <td>{{ bet_data.title }}</td>
                 <td>{{ bet_data.over }}</td>
                 <td>{{ bet_data.under }}</td>
                 <td>{{ bet_data.payout }}</td>
             </tr>
+            <!-- Inner table container -->
+            <tr class="inner-table-container">
+                <td colspan="4">
+                    <table class="inner-table">
+                        <thead>
+                            <tr>
+                                <th>Title </th>
+                                <th>Odds 1</th>
+                                <th>Odds 2</th>
+                                <th>Payout</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in bet_data.under_div %}
+                            <tr>
+                                <td>{{ data.under_heading }}</td>
+                                <td>{{ data.odds1}}</td>
+                                <td>{{ data.odds2}}</td>
+                                <td>{{ data.payout }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
         {% else %}
-        <p>No data. <a href="{% url 'home' %}">Click here to return to home page</a></p>
+        <p>No data. <a href="{% url 'home' %}">Click here to return to the home page</a></p>
         {% endif %}
     </table>
 
     <script>
+        function showInnerTable(row) {
+            var innerTableContainer = row.nextElementSibling;
+            innerTableContainer.style.display = innerTableContainer.style.display === 'none' ? 'table-row' : 'none';
+        }
+        
         function redirectToURL(country,league,matches,tab) {
             var currentURL = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/';
             
@@ -133,14 +187,15 @@
             win.focus();
         }
 
-        function redirectToURLOther(country,league,matches,tab) {
-            var url = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/' + encodeURIComponent(tab);
+        // Additional script for button functions...
+        function redirectToURLOther(country,league,matches,other) {
+            var url = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/' + encodeURIComponent(other);
 
             var win = window.open(url, '_blank');
             win.focus();
         }
+        
     </script>
-    
 
 </body>
 

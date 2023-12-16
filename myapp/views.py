@@ -17,13 +17,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 firefox_driver_path = 'geckodriver.exe'
 
-@login_required(login_url='home')
+@login_required(login_url='/?message=Please%20enter%20the%20code')
 def bets_other(request,country,league,matches,other):
     driver = None
     try:
@@ -38,12 +37,23 @@ def bets_other(request,country,league,matches,other):
         url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/{other}'
 
         driver.get(url)
+        print('other - ',other)
         print("url - ",url)
 
 
-        WebDriverWait(driver, 1).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_all_elements_located((By.XPATH, '//*'))
         )
+
+        css_selector = '.border-black-borders.hover\\:bg-gray-light.flex.h-9.cursor-pointer.border-b.border-l.border-r.text-xs'
+
+        # Find all elements matching the CSS selector
+        divs = driver.find_elements('css selector', css_selector)
+
+        # Perform actions on each element, if needed
+        for div in divs:
+            driver.execute_script("arguments[0].click();", div)
+
 
         body_element = driver.page_source
 
@@ -51,37 +61,82 @@ def bets_other(request,country,league,matches,other):
 
         divs = soup.find_all('div','relative flex flex-col')
 
+        # under_div_elements = driver.find_elements(By.CSS_SELECTOR, ".border-black-borders.hover\\:bg-gray-light.flex.h-9.cursor-pointer.border-b.border-l.border-r.text-xs")
+
         data_list = []
 
         for div in divs:
-            title = div.find('p','max-sm:!hidden').text.strip()
+            title = div.find('p','max-sm:!hidden')
             ov_ah = div.find_all('p','height-content !text-black-main next-m:min-w-[100%] flex-center min-h-full min-w-[50px] hover:!bg-gray-medium default-odds-bg-bgcolor border gradient-green-added-border')
+            
+            if title is not None:
+                title = title.text.strip()
 
             over = ov_ah[0].text.strip() if other else ""
             under = ov_ah[1].text.strip() if len(other)>1 else ""
      
             payout = div.find('div','colaps-btn border-black-borders border-l')
 
-            payout = payout.text.strip()
+            if payout is not None:
+                payout = payout.text.strip()
 
+            under_divs_list = []
+            uo = div.find('div','flex flex-col')
+
+            try:
+                for under_div in uo.find_all('div', class_='flex h-9 border-b border-l border-r text-xs border-black-borders bg-gray-med_light border-black-borders border-b') or uo.find('div',class_='flex h-9 border-b border-l border-r text-xs border-black-borders bg-gray-med_light'):
+                    under_heading = under_div.find('p', class_='height-content max-mm:hidden pl-4')
+                    # handicap = under_div.find('div', class_='border-gray-medium flex min-w-[60px] flex-col items-center justify-center gap-1 border-l text-sm text-[#2F2F2F] max-sm:!hidden max-sm:min-w-[55px]').text.strip()
+                    odds = under_div.find_all('p')
+                    if len(odds) >= 3:
+                        odds1 = odds[1].text.strip()
+                        odds2 = odds[2].text.strip()
+                    else:
+                        # Handle the case where there are not enough 'p' elements
+                        odds1 = "N/A"
+                        odds2 = "N/A"
+                        
+                    payout_odds = under_div.find('span', class_='height-content text-[10px]')
+
+                    if payout_odds is not None:
+                        payout_odds = payout_odds.text.strip()
+
+                    if under_heading is not None:
+                        under_heading = under_heading.text.strip()
+
+                    # Create a dictionary for each under_div
+                    under_div_data = {
+                        'under_heading': under_heading,
+                        'odds1': odds1,
+                        'odds2': odds2,
+                        'payout': payout_odds
+                    }
+
+                    # Append the dictionary to the list
+                    under_divs_list.append(under_div_data)
+
+            except Exception as e:
+                print("Under div error - ",e)
+                return HttpResponse("Error")
+            
 
             bet_data = {
                 'title':title,
                 'over':over,
                 'under':under,
                 'payout':payout,
+                'under_div':under_divs_list
             }
 
             data_list.append(bet_data)
 
-            over_under = "#over-under"
-            ah = "#ah"
-            other
-
-            if over_under in other:
-                other = over_under
-            elif ah in other:
-                other = ah
+        over_under = "#over-under"
+        ah = "#ah"
+        
+        if over_under in other:
+            other = over_under
+        elif ah in other:
+            other = ah
         
         return render(request, 'bets-other.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'other':other})
     
@@ -94,7 +149,7 @@ def bets_other(request,country,league,matches,other):
             driver.quit()
 
 
-@login_required(login_url='home')
+@login_required(login_url='/?message=Please%20enter%20the%20code')
 def bets(request,country,league,matches):
     driver = None
     try:
@@ -119,29 +174,41 @@ def bets(request,country,league,matches):
     
 
         # Wait until the entire DOM is loaded
-        WebDriverWait(driver, 1).until(
+        WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.XPATH, '//*'))
         )
 
         body_element = driver.page_source
 
         soup = BeautifulSoup(body_element, 'lxml')
-        bets = soup.find_all('div','flex h-9 border-b border-l border-r text-xs')
+        bets = soup.find_all('div','flex h-9 border-b border-l border-r text-xs border-black-borders')
         
         data_list = []
 
         for bet in bets:
             image = bet.find('img', 'bookmaker-logo bg-cover bg-no-repeat')
-            src = image['src']
-            title = image['title']
+
+            if image is not None:
+                src = image['src']
+                title = image['title']
 
             odds = bet.find_all('div', 'flex flex-row items-center gap-[3px]')
+            print("odds  1 - ",odds[0])
+            print("------------------")
+            print("odds 2 - ",odds[2])
+            print("------------------")
+            print("odds x - ",odds[1])
+            print("=================================")
             odds_1 = odds[0].text.strip() if odds else ""
             odds_x = odds[1].text.strip() if len(odds) > 1 else ""
             odds_2 = odds[2].text.strip() if len(odds) > 2 else ""
 
-            payout = bet.find('span', 'height-content text-[10px]').text.strip()
             
+            payout = bet.find('span', 'height-content text-[10px]')
+            
+            if payout is not None:
+                payout = payout.text.strip()
+
             # Create a dictionary for each bet
             bet_data = {
                 'src': src,
@@ -179,7 +246,7 @@ def bets(request,country,league,matches):
             driver.quit()
 
 
-@login_required(login_url='home')
+@login_required(login_url='/?message=Please%20enter%20the%20code')
 def football_detail(request,country,league):
     driver = None
     try:
@@ -474,7 +541,7 @@ def live(request):
 
     return render(request, 'home.html', {'rows_data': rows_data})
 
-@login_required(login_url='home')
+@login_required(login_url='/?message=Please%20enter%20the%20code')
 def football_results(request):
     url = 'https://www.oddsportal.com/football/results'
 
@@ -488,7 +555,7 @@ def football_results(request):
     return render(request, 'football.html', {'data': rows_data})
 
 
-@login_required(login_url='home')
+@login_required(login_url='/?message=Please%20enter%20the%20code')
 def football(request):
     url = 'https://www.oddsportal.com/football/'
 
@@ -508,38 +575,45 @@ def error(request):
     return render(request, 'error.html')
 
 
-@login_required(login_url='home') 
-def game_detail(request, game_id):
-    team = request.GET.get('team', None)
-    league = request.GET.get('league', None)
-    tabContent = request.GET.get('tabContent', None)
-    img_src = request.GET.get('img_src', None)
-    url = f'https://www.excapper.com/?action=game&id={game_id}'
+@login_required(login_url='/?message=Please%20enter%20the%20code')
+def game_detail(request):
+    if request.method == "POST":
+        team = request.POST.get('team',None)
+        league = request.POST.get('league',None)
+        tabContent = request.POST.get('tabContent',None)
+        img_src = request.POST.get('img_src',None)
+        game_id = request.POST.get('game_id')
+        url = f'https://www.excapper.com/?action=game&id={game_id}'
+        try:
+            menus = fetch_menu(url)
 
-    try:
-        menus = fetch_menu(url)
+            if tabContent is None and  menus is not None and len(menus) > 0:
+                tabContent = menus[0].get('data_tab', tabContent)
 
-        if tabContent is None and  menus is not None and len(menus) > 0:
-            tabContent = menus[0].get('data_tab', tabContent)
 
-        url = f'https://www.excapper.com/?action=game&id={game_id}#{tabContent}'
-        chart_urls = fetch_charts(url, tabContent)
-        table_rows = fetch_tabContent(url, tabContent)
+            url = f'https://www.excapper.com/?action=game&id={game_id}#{tabContent}'
+            chart_urls = fetch_charts(url, tabContent)
+            table_rows = fetch_tabContent(url, tabContent)
 
-    except RuntimeError:
-        return render(request, 'error.html')
 
-    context = {
-        'menus': menus,
-        'charts': chart_urls,
-        'rows': table_rows,
-        'league': league,
-        'team': team,
-        'img_src': img_src,
-        'game_id': game_id,
-    }
-    return render(request, 'game_detail.html', context)
-   
+        except RuntimeError:
+            return render(request, 'error.html')
+
+        context = {
+            'menus': menus,
+            'charts': chart_urls,
+            'rows': table_rows,
+            'league': league,
+            'team': team,
+            'img_src': img_src,
+            'game_id': game_id,
+        }
+
+        return render(request, 'game_detail.html', context)
+    
+    return redirect('home')
+
+
 
 def load_allowed_codes():
     allowed_codes =  AllowedCode.objects.all().values_list('code', flat=True)
