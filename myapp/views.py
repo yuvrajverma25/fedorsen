@@ -39,6 +39,9 @@ def bets_other(request,country,league,matches,other):
         print('other - ',other)
         print("url - ",url)
 
+        team1 = request.GET.get('team1')
+        team2 = request.GET.get('team2')
+
 
         WebDriverWait(driver, 5).until(
             EC.presence_of_all_elements_located((By.XPATH, '//*'))
@@ -137,7 +140,7 @@ def bets_other(request,country,league,matches,other):
         elif ah in other:
             other = ah
         
-        return render(request, 'bets-other.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'other':other})
+        return render(request, 'bets-other.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'other':other,'team1':team1,'team2':team2})
     
     except Exception as e:
         print("Error" , e)
@@ -161,8 +164,6 @@ def bets(request,country,league,matches):
         driver = webdriver.Firefox(service=driver_service, options=firefox_options)
 
         tab = request.GET.get('tab',None)
-        team1 = request.GET.get('team1',None)
-        team2 = request.GET.get('team2',None)
 
         if tab is not None:
             url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/{tab}'
@@ -172,38 +173,40 @@ def bets(request,country,league,matches):
         driver.get(url)
         print("tab - ",tab)
         print("url - ",url)
+
+        team1 = request.GET.get('team1')
+        team2 = request.GET.get('team2')
     
 
         # Wait until the entire DOM is loaded
         WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.XPATH, '//*'))
         )        
-        # pop up code in progress 
-        '''
-        css_selector = '.flex-center.flex-col.font-bold'
+    
+        # css_selector = '.flex-center.flex-col.font-bold'
 
-        # Find all elements matching the CSS selector
-        divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
-        print("DIV length - ", len(divs))
+        # # Find all elements matching the CSS selector
+        # divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
+        # print("DIV length - ", len(divs))
 
-        # Perform actions on each element, if needed
-        for div in divs:
-            driver.execute_script("arguments[0].dispatchEvent(new Event('mouseover'))", div)
-            # driver.execute_script("arguments[0].click();", div)
+        # # Perform actions on each element, if needed
+        # for div in divs:
+        #     driver.execute_script("arguments[0].dispatchEvent(new Event('mouseover'))", div)
+        #     # driver.execute_script("arguments[0].click();", div)
 
-            try:
-                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'tooltip')))
-                tool = driver.find_element(By.CSS_SELECTOR,  'tooltip')
-                print(tool.text)
-                print("Click was successful!")
-            except Exception as e :
-                print("Timeout: Click may not have been successful.")
+        #     try:
+        #         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'tooltip')))
+        #         tool = driver.find_element(By.CSS_SELECTOR,  'tooltip')
+        #         print(tool.text)
+        #         print("Click was successful!")
+        #     except Exception as e :
+        #         print("Timeout: Click may not have been successful.")
 
-            div_text = div.text
-            print("div text = ", div_text)
-            print("--------------------------------")
+        #     div_text = div.text
+        #     print("div text = ", div_text)
+        #     print("--------------------------------")
 
-        '''
+
 
         body_element = driver.page_source
 
