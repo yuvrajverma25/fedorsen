@@ -10,7 +10,6 @@ from myapp.models import AccessCode , AllowedCode
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -162,6 +161,8 @@ def bets(request,country,league,matches):
         driver = webdriver.Firefox(service=driver_service, options=firefox_options)
 
         tab = request.GET.get('tab',None)
+        team1 = request.GET.get('team1',None)
+        team2 = request.GET.get('team2',None)
 
         if tab is not None:
             url = f'https://www.oddsportal.com/football/{country}/{league}/{matches}/{tab}'
@@ -176,7 +177,33 @@ def bets(request,country,league,matches):
         # Wait until the entire DOM is loaded
         WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.XPATH, '//*'))
-        )
+        )        
+        # pop up code in progress 
+        '''
+        css_selector = '.flex-center.flex-col.font-bold'
+
+        # Find all elements matching the CSS selector
+        divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
+        print("DIV length - ", len(divs))
+
+        # Perform actions on each element, if needed
+        for div in divs:
+            driver.execute_script("arguments[0].dispatchEvent(new Event('mouseover'))", div)
+            # driver.execute_script("arguments[0].click();", div)
+
+            try:
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'tooltip')))
+                tool = driver.find_element(By.CSS_SELECTOR,  'tooltip')
+                print(tool.text)
+                print("Click was successful!")
+            except Exception as e :
+                print("Timeout: Click may not have been successful.")
+
+            div_text = div.text
+            print("div text = ", div_text)
+            print("--------------------------------")
+
+        '''
 
         body_element = driver.page_source
 
@@ -193,12 +220,12 @@ def bets(request,country,league,matches):
                 title = image['title']
 
             odds = bet.find_all('div', 'flex flex-row items-center gap-[3px]')
-            print("odds  1 - ",odds[0])
-            print("------------------")
-            print("odds 2 - ",odds[2])
-            print("------------------")
-            print("odds x - ",odds[1])
-            print("=================================")
+            # print("odds  1 - ",odds[0])
+            # print("------------------")
+            # print("odds 2 - ",odds[2])
+            # print("------------------")
+            # print("odds x - ",odds[1])
+            # print("=================================")
             odds_1 = odds[0].text.strip() if odds else ""
             odds_x = odds[1].text.strip() if len(odds) > 1 else ""
             odds_2 = odds[2].text.strip() if len(odds) > 2 else ""
@@ -233,7 +260,7 @@ def bets(request,country,league,matches):
                 tab = first
 
 
-        return render(request, 'bets.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'tab':tab})
+        return render(request, 'bets.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'tab':tab,'team1':team1,'team2':team2})
     
 
     except Exception as e:

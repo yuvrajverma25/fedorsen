@@ -82,19 +82,20 @@
 
     <div class="header">
         <h1>Betting Data</h1>
+        <h4>{{team1}} <span>VS</span> {{team2}}</h4>
     </div>
 
     <div class="buttons-container">
-        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','#1X2;2')">1X2</button>
-        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','#over-under;2')">Over/Under</button>
-        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','#ah;2')">Asian Handicap</button>
-        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','#bts;2')">Both teams to Score</button>
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','#1X2','{{team1}}','{{team2}}')">1X2</button>
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','#over-under','{{team1}}','{{team2}}')">Over/Under</button>
+        <button class="button" onclick="redirectToURLOther('{{country}}', '{{league}}', '{{matches}}','#ah','{{team1}}','{{team2}}')">Asian Handicap</button>
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','#bts','{{team1}}','{{team2}}')">Both teams to Score</button>
     </div>
 
     <div class="buttons-container">
-        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};2')">Full time</button>
-        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};3')">1st half</button>
-        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};4')">2nd half</button>
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}}','{{team1}}','{{team2}}')">Full time</button>
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};3','{{team1}}','{{team2}}')">1st half</button>
+        <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};4','{{team1}}','{{team2}}')">2nd half</button>
     </div>
 
     <table border="1">
@@ -120,31 +121,31 @@
             {% endfor %}
         </tbody>
         {% else %}
-        <p>No data. <a href="{% url 'home' %}">Click here to return to home page</a></p>
+        <tr>
+            <td colspan="5">No data. <a href="{% url 'home' %}">Click here to return to home page</a></td>
+        </tr>
         {% endif %}
     </table>
 
     <script>
-        function redirectToURL(country,league,matches,tab) {
+        function redirectToURL(country, league, matches, tab, team1, team2) {
             var currentURL = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/';
             
             var separator = currentURL.includes('?') ? '&' : '?';
 
-            var url = currentURL + separator + 'tab=' + encodeURIComponent(tab);
+            var url = currentURL + separator + 'tab=' + encodeURIComponent(tab) + '&team1=' + encodeURIComponent(team1) + '&team2=' + encodeURIComponent(team2);
 
             var win = window.open(url, '_blank');
             win.focus();
         }
 
-        function redirectToURLOther(country,league,matches,tab) {
-            var url = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/' + encodeURIComponent(tab);
+        function redirectToURLOther(country, league, matches, tab, team1, team2) {
+            var url = '/football/' + encodeURIComponent(country) + '/' + encodeURIComponent(league) + '/' + encodeURIComponent(matches) + '/' + encodeURIComponent(tab) + '?team1=' + encodeURIComponent(team1) + '&team2=' + encodeURIComponent(team2) ;
 
             var win = window.open(url, '_blank');
             win.focus();
         }
     </script>
-    
-
 </body>
 
 </html>

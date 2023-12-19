@@ -86,7 +86,7 @@
         </thead>
         {% endif %}
         <tbody>
-            <tr onclick="openInNewTab('{{ event.href }}')">
+            <tr onclick="openInNewTab('{{ event.href }}','{{event.team1}}','{{event.team2}}')">
                 <td>{{ event.time }}</td>
                 <td>{{ event.team1 }} - {{ event.team2 }}</td>
                 <td>{{ event.odds_1 }}</td>
@@ -99,8 +99,12 @@
     </table>
 
     <script>
-        function openInNewTab(url) {
-            var win = window.open(url, '_blank');
+        function openInNewTab(url, parameter1, parameter2) {
+            // Concatenate parameters to the URL
+            var params = "?team1=" + encodeURIComponent(parameter1) + "&team2=" + encodeURIComponent(parameter2);
+            var fullUrl = url + params;
+    
+            var win = window.open(fullUrl, '_blank');
             win.focus();
         }
     </script>
