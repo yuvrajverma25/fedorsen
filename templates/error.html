@@ -33,7 +33,8 @@
     <h1>OOPS! Something went wrong. Please try again later.</h1>
     <div id="timer">10</div>
     <div id="linkContainer">
-        <a href="{% url 'home' %}"  id="redirectLink">Click here to continue</a>
+        <a href="javascript:void(0);" id="redirectLink" onclick="reloadPage()">Click here to continue</a>
+        <a href="{% url 'home' %}"  id="redirectLink">Home Page</a>
     </div>
 
     <script>
@@ -55,6 +56,10 @@
 
 
         });
+
+        function reloadPage() {
+            location.reload();
+        }
     </script>
 </body>
 </html>
