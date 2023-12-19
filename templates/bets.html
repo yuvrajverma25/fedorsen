@@ -97,7 +97,33 @@
         <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};3','{{team1}}','{{team2}}')">1st half</button>
         <button class="button" onclick="redirectToURL('{{country}}', '{{league}}', '{{matches}}','{{tab}};4','{{team1}}','{{team2}}')">2nd half</button>
     </div>
-
+                
+    {% if tab == "#bts" %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Yes</th>
+                <th>No</th>
+                <th>Payout</th>
+            </tr>
+        </thead>
+        {% if data_list %}
+        <tbody>
+            {% for bet_data in data_list %}
+            <tr>
+                <td><img src="{{ bet_data.src }}" alt="{{ bet_data.title }}">{{ bet_data.title }}</td>
+                <td>{{ bet_data.odds_1 }}</td>
+                <td>{{ bet_data.odds_x }}</td>
+                <td>{{ bet_data.payout }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% else %}
+        <p>No data. <a href="{% url 'home' %}">Click here to return to home page</a></p>
+        {% endif %}
+    </table>
+    {% else %}
     <table border="1">
         <thead>
             <tr>
@@ -124,6 +150,7 @@
         <p>No data. <a href="{% url 'home' %}">Click here to return to home page</a></p>
         {% endif %}
     </table>
+    {% endif %}
 
     <script>
         function redirectToURL(country,league,matches,tab,team1,team2) {

@@ -1,3 +1,4 @@
+import re
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 import requests
@@ -150,6 +151,20 @@ def bets_other(request,country,league,matches,other):
         if driver:
             driver.quit()
 
+def format_odds(input_str):
+    # Extract the first decimal point
+    first_decimal_index = input_str.find('.')
+    
+    # Check if there is at least one decimal point
+    if first_decimal_index != -1:
+        # Extract the substring up to the first decimal point + 3 characters
+        formatted_str = input_str[:first_decimal_index + 3]
+        return formatted_str
+    else:
+        # If there is no decimal point, return the original string
+        return input_str
+    
+
 
 @login_required(login_url='/?message=Please%20enter%20the%20code')
 def bets(request,country,league,matches):
@@ -223,15 +238,14 @@ def bets(request,country,league,matches):
                 title = image['title']
 
             odds = bet.find_all('div', 'flex flex-row items-center gap-[3px]')
-            # print("odds  1 - ",odds[0])
-            # print("------------------")
-            # print("odds 2 - ",odds[2])
-            # print("------------------")
-            # print("odds x - ",odds[1])
-            # print("=================================")
+            # print("Odds length - ",len(odds))
             odds_1 = odds[0].text.strip() if odds else ""
             odds_x = odds[1].text.strip() if len(odds) > 1 else ""
             odds_2 = odds[2].text.strip() if len(odds) > 2 else ""
+
+            odds_1 = format_odds(odds_1)
+            odds_2 = format_odds(odds_2)
+            odds_x = format_odds(odds_x)
 
             
             payout = bet.find('span', 'height-content text-[10px]')
