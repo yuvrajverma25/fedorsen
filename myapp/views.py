@@ -87,7 +87,7 @@ def bets_other(request,country,league,matches,other):
             uo = div.find('div','flex flex-col')
 
             try:
-                for under_div in uo.find_all('div', class_='flex h-9 border-b border-l border-r text-xs border-black-borders bg-gray-med_light border-black-borders border-b') or uo.find('div',class_='flex h-9 border-b border-l border-r text-xs border-black-borders bg-gray-med_light'):
+                for under_div in uo.find_all('div', class_='border-black-borders flex h-9 border-b border-l border-r text-xs bg-gray-med_light border-black-borders border-b'):
                     under_heading = under_div.find('p', class_='height-content max-mm:hidden pl-4')
                     # handicap = under_div.find('div', class_='border-gray-medium flex min-w-[60px] flex-col items-center justify-center gap-1 border-l text-sm text-[#2F2F2F] max-sm:!hidden max-sm:min-w-[55px]').text.strip()
                     odds = under_div.find_all('p')
@@ -165,6 +165,65 @@ def format_odds(input_str):
         return input_str
     
 
+def inner_data(request,index):
+    
+    driver = None
+    try:
+        firefox_options = Options()
+        firefox_options.add_argument('--headless')
+
+        # Create the Service and WebDriver instances
+        driver_service = Service(firefox_driver_path)
+        driver = webdriver.Firefox(service=driver_service, options=firefox_options)
+
+        url = request.GET.get('url',None)
+        
+        if url is None:
+            return Exception
+        
+        driver.get(url)
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, '//*'))
+        )    
+
+        css_selector = '.flex-center.flex-col.font-bold'
+
+        # Find all elements matching the CSS selector
+        divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
+        print("DIV length - ", len(divs))
+
+        div = divs[index]
+
+        # driver.execute_script("arguments[0].dispatchEvent(new Event('mouseover'))", div)
+        try:
+            driver.execute_script("arguments[0].click();", div)
+
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'flex flex-col gap-2')))
+            tool = driver.find_element(By.CSS_SELECTOR,  '.flex.flex-col.gap-2')
+            print(tool.text)
+            print("Click was successful!")
+        except Exception as e :
+            print("Timeout: Click may not have been successful.")
+            print("Error" , e)
+            return render(request,'error.html')
+
+        div_text = div.text
+        print("div text = ", div_text)
+        print("--------------------------------")
+        return HttpResponse("Waao")
+
+    except Exception as e:
+        print("Error" , e)
+        return render(request,'error.html')
+
+    finally:
+        # Close the browser window if the driver is assigned
+        if driver:
+            driver.quit()
+
+
+
 
 @login_required(login_url='/?message=Please%20enter%20the%20code')
 def bets(request,country,league,matches):
@@ -198,39 +257,17 @@ def bets(request,country,league,matches):
             EC.presence_of_all_elements_located((By.XPATH, '//*'))
         )        
     
-        # css_selector = '.flex-center.flex-col.font-bold'
-
-        # # Find all elements matching the CSS selector
-        # divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
-        # print("DIV length - ", len(divs))
-
-        # # Perform actions on each element, if needed
-        # for div in divs:
-        #     driver.execute_script("arguments[0].dispatchEvent(new Event('mouseover'))", div)
-        #     # driver.execute_script("arguments[0].click();", div)
-
-        #     try:
-        #         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'tooltip')))
-        #         tool = driver.find_element(By.CSS_SELECTOR,  'tooltip')
-        #         print(tool.text)
-        #         print("Click was successful!")
-        #     except Exception as e :
-        #         print("Timeout: Click may not have been successful.")
-
-        #     div_text = div.text
-        #     print("div text = ", div_text)
-        #     print("--------------------------------")
-
-
-
+        
         body_element = driver.page_source
 
         soup = BeautifulSoup(body_element, 'lxml')
-        bets = soup.find_all('div','flex h-9 border-b border-l border-r text-xs border-black-borders')
+        bets = soup.find_all('div','border-black-borders flex h-9 border-b border-l border-r text-xs')
         
         data_list = []
+        index = 0
 
         for bet in bets:
+            # print("index - ",index)
             image = bet.find('img', 'bookmaker-logo bg-cover bg-no-repeat')
 
             if image is not None:
@@ -246,7 +283,6 @@ def bets(request,country,league,matches):
             odds_1 = format_odds(odds_1)
             odds_2 = format_odds(odds_2)
             odds_x = format_odds(odds_x)
-
             
             payout = bet.find('span', 'height-content text-[10px]')
             
@@ -255,6 +291,9 @@ def bets(request,country,league,matches):
 
             # Create a dictionary for each bet
             bet_data = {
+                # 'index_0':index,
+                # 'index_1':index + 1,
+                # 'index_2':index + 2,
                 'src': src,
                 'title': title,
                 'odds_1': odds_1,
@@ -264,20 +303,21 @@ def bets(request,country,league,matches):
             }
 
             data_list.append(bet_data)
+            index = index + 3 
+            
 
-            first = "#1X2"
-            second = "#bts"
+        first = "#1X2"
+        second = "#bts"
 
-            if tab is not None:
-                if first in tab:
-                    tab = first
-                elif second in tab:
-                    tab = second
-            else:
+        if tab is not None:
+            if first in tab:
                 tab = first
+            elif second in tab:
+                tab = second
+        else:
+            tab = first
 
-
-        return render(request, 'bets.html', {'data_list': data_list,'country':country,'league':league,'matches':matches,'tab':tab,'team1':team1,'team2':team2})
+        return render(request, 'bets.html', {'url':url,'data_list': data_list,'country':country,'league':league,'matches':matches,'tab':tab,'team1':team1,'team2':team2})
     
 
     except Exception as e:
@@ -729,3 +769,83 @@ def logOut(request):
 
 
 
+
+
+
+
+# css_selector = '.flex-center.flex-col.font-bold'
+
+#         # Find all elements matching the CSS selector
+#         divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
+#         print("DIV length - ", len(divs))
+
+#         # # Perform actions on each element, if needed
+#         for div in divs:
+
+#             # try:
+#             #     driver.execute_script("arguments[0].dispatchEvent(new Event('mouseover'))", div)
+#             #     # WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'tooltip')))
+#             #     # tool = driver.find_element(By.CSS_SELECTOR,  'tooltip')
+#             #     # print("tool - ",tool.text)
+#             #     print("Click was successful!")
+#             # except Exception as e :
+#             #     print("Timeout: Click may not have been successful.")
+
+#             div_text = div.text
+#             print("div text = ", div_text)
+#             print("--------------------------------")
+
+
+def inner(request, index):
+    driver = None
+    try:
+        url = "https://www.oddsportal.com/football/england/premier-league/aston-villa-sheffield-utd-QJsvMDSM/#1X2;2"
+
+        # Set up headless Firefox browser
+        firefox_options = Options()
+        firefox_options.add_argument('--headless')
+        firefox_options.add_argument('--window-size=1013x640')
+
+        driver_service = Service(firefox_driver_path)
+        driver = webdriver.Firefox(service=driver_service, options=firefox_options)
+
+        # Navigate to the URL
+        driver.get(url)
+        print("URL:", url)
+
+        # Find the div element
+        css_selector = '.flex-center.flex-col.font-bold'
+        divs = driver.find_elements(By.CSS_SELECTOR, css_selector)
+        print("Total number of divs:", len(divs))
+
+        if divs:
+            # Click the first div
+            div = divs[0]
+            driver.execute_script("arguments[0].click();", div)
+
+            try:
+                # Wait for a new element to appear after the click
+                # new_element_selector = '.min-md\\:!hidden.bg-white-main.text-black-main.height-content.border-red-medium.fixed.left-1\\/2.top-1\\/2.z-50.ml-\\[-160px\\].mr-\\[-160px\\].flex.w-\\[320px\\].translate-y-\\[-50%\\].flex-col.border.pb-3.pl-4.pr-4.pt-1.text-xs'
+                new_element_selector = '.min-md\\:!hidden'
+
+                new_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, new_element_selector))
+                )
+
+                # Print the content of the new element
+                print("Content of the new element:", new_element.text)
+
+            except Exception as e:
+                # If the timeout occurs, the click was not successful
+                print("Click was not successful. Error:", e)
+
+    except Exception as e:
+        print("Error:", e)
+        return HttpResponse("Error")
+
+    finally:
+        # Close the browser window if the driver is assigned
+        if driver:
+            driver.quit()
+
+    return HttpResponse("Done")

@@ -15,6 +15,8 @@ urlpatterns = [
     path('football/<str:country>/<str:league>/<str:matches>/',views.bets,name='bets'),
     path('football/<str:country>/<str:league>/<str:matches>/<str:other>',views.bets_other,name='bets-other'),
     path('football/',views.football,name='football'),
+    path('inner-data/<int:index>',views.inner_data,name='inner-data'),
+    path('inner/<int:index>',views.inner),
 ]
 
     # path('', views.home, name='home'),

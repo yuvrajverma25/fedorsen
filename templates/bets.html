@@ -139,9 +139,9 @@
             {% for bet_data in data_list %}
             <tr>
                 <td><img src="{{ bet_data.src }}" alt="{{ bet_data.title }}">{{ bet_data.title }}</td>
-                <td>{{ bet_data.odds_1 }}</td>
-                <td>{{ bet_data.odds_x }}</td>
-                <td>{{ bet_data.odds_2 }}</td>
+                <td onclick="handleClick('{{ bet_data.odds_1 }}', '{{ bet_data.index_0 }}', '{{ url }}')">{{ bet_data.odds_1 }}</td>
+                <td onclick="handleClick('{{ bet_data.odds_x }}', '{{ bet_data.index_1 }}', '{{ url }}')">{{ bet_data.odds_x }}</td>
+                <td onclick="handleClick('{{ bet_data.odds_2 }}', '{{ bet_data.index_2 }}', '{{ url }}')">{{ bet_data.odds_2 }}</td>
                 <td>{{ bet_data.payout }}</td>
             </tr>
             {% endfor %}
@@ -170,6 +170,14 @@
             var win = window.open(url, '_blank');
             win.focus();
         }
+
+        {% comment %} function handleClick(odds, index, url) {
+            // Construct the URL with the provided parameters
+            var targetUrl = '/inner-data' + '/' + index + '?url=' + encodeURIComponent(url);
+            
+            // Redirect to the constructed URL
+            window.open(targetUrl, '_blank');
+        } {% endcomment %}
     </script>
     
 
